@@ -11,8 +11,6 @@
     </p>
 </p>
 
-Toad is an HTTP Mocking & Debugging Service. It enables easy mocking of any HTTP web service for testing and debugging purposes.
-
 ## Documentation
 
 ### Usage
