@@ -10,7 +10,7 @@ RUN apt-get update
 
 WORKDIR /app
 
-RUN curl -sL https://github.com/Clivern/Toad/releases/download/${TOAD_VERSION}/Rhino_${TOAD_VERSION}_Linux_x86_64.tar.gz | tar xz
+RUN curl -sL https://github.com/Clivern/Toad/releases/download/${TOAD_VERSION}/Toad_${TOAD_VERSION}_Linux_x86_64.tar.gz | tar xz
 
 RUN rm LICENSE
 RUN rm README.md
