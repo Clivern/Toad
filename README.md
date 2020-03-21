@@ -1,11 +1,11 @@
 <p align="center">
-    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.1.3" width="150" />
+    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.1.4" width="150" />
     <h3 align="center">Toad</h3>
     <p align="center">Containerized Application for Testing Purposes</p>
     <p align="center">
         <a href="https://travis-ci.com/Clivern/Toad"><img src="https://travis-ci.com/Clivern/Toad.svg?branch=master"></a>
-        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.1.3-red.svg"></a>
-        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.1.3"></a>
+        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.1.4-red.svg"></a>
+        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.1.4"></a>
         <a href="https://hub.docker.com/r/clivern/toad"><img src="https://img.shields.io/badge/Docker-Latest-green"></a>
         <a href="https://github.com/Clivern/Toad/blob/master/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-orange.svg"></a>
     </p>
@@ -42,10 +42,10 @@ $ curl http://127.0.0.1:8080/
 Deploy on k8s.
 
 ```zsh
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" create -f deployment/k8s/deployment.yaml --record
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/deployment.yaml --record
 $ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get deployments
 
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" create -f deployment/k8s/service.yml --record
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/service.yml --record
 $ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get svc
 ```
 
