@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: toad
-        image: clivern/toad:release-0.1.4
+        image: clivern/toad:release-0.1.5
         ports:
         - containerPort: 8080
