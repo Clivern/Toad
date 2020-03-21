@@ -9,8 +9,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/satori/go.uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -18,6 +21,12 @@ var (
 	commit  = "none"
 	date    = "unknown"
 )
+
+func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+}
 
 func main() {
 	var port string
@@ -50,6 +59,14 @@ func main() {
 	})
 
 	r.GET("/", func(c *gin.Context) {
+		u := uuid.Must(uuid.NewV4(), nil)
+
+		log.WithFields(log.Fields{
+			"uri":           "/",
+			"method":        "GET",
+			"correlationId": u.String(),
+		}).Info("Incoming Request")
+
 		c.JSON(http.StatusOK, gin.H{
 			"status":  "ok",
 			"release": fmt.Sprintf(`Toad Version %v Commit %v, Built @%v`, version, commit, date),
