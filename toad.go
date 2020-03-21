@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
@@ -60,8 +61,11 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		u := uuid.Must(uuid.NewV4(), nil)
+		host, _ := os.Hostname()
 
 		log.WithFields(log.Fields{
+			"time":          time.Now().Format("Mon Jan 2 15:04:05 2006"),
+			"host":          host,
 			"uri":           c.Request.URL.Path,
 			"method":        c.Request.Method,
 			"correlationId": u.String(),
@@ -69,6 +73,8 @@ func main() {
 
 		c.JSON(http.StatusOK, gin.H{
 			"status":  "ok",
+			"time":    time.Now().Format("Mon Jan 2 15:04:05 2006"),
+			"host":    host,
 			"release": fmt.Sprintf(`Toad Version %v Commit %v, Built @%v`, version, commit, date),
 		})
 	})
