@@ -43,10 +43,13 @@ Deploy on k8s.
 
 ```zsh
 $ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/deployment.yaml --record
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get deployments
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get deployments -o wide
 
 $ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/service.yml --record
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get svc
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get svc -o wide
+
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get pods -o wide
+$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" logs $PodName
 ```
 
 
