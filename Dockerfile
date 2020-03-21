@@ -1,6 +1,6 @@
 FROM golang:1.14.1
 
-ARG TOAD_VERSION=0.1.5
+ARG TOAD_VERSION=0.1.6
 
 ENV GO111MODULE=on
 
@@ -19,5 +19,8 @@ RUN mv Toad toad
 RUN ./toad --get=release
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=5s --timeout=2s --retries=5 --start-period=2s \
+  CMD ./toad --get health
 
 CMD ["./toad", "--port", "8080"]

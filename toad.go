@@ -37,6 +37,11 @@ func main() {
 	flag.StringVar(&get, "get", "", "get")
 	flag.Parse()
 
+	if get == "health" {
+		fmt.Println("i am ok")
+		return
+	}
+
 	if get == "release" {
 		fmt.Println(
 			fmt.Sprintf(
@@ -57,6 +62,23 @@ func main() {
 
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.String(http.StatusNoContent, "")
+	})
+
+	r.GET("/_health", func(c *gin.Context) {
+		u := uuid.Must(uuid.NewV4(), nil)
+		host, _ := os.Hostname()
+
+		log.WithFields(log.Fields{
+			"time":          time.Now().Format("Mon Jan 2 15:04:05 2006"),
+			"host":          host,
+			"uri":           c.Request.URL.Path,
+			"method":        c.Request.Method,
+			"correlationId": u.String(),
+		}).Info("Incoming Request")
+
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
 	})
 
 	r.GET("/", func(c *gin.Context) {
