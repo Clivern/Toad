@@ -62,8 +62,8 @@ func main() {
 		u := uuid.Must(uuid.NewV4(), nil)
 
 		log.WithFields(log.Fields{
-			"uri":           "/",
-			"method":        "GET",
+			"uri":           c.Request.URL.Path,
+			"method":        c.Request.Method,
 			"correlationId": u.String(),
 		}).Info("Incoming Request")
 
