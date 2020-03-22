@@ -85,14 +85,15 @@ $ curl http://127.0.0.1:8080/do/all_down -v
 Deploy on k8s.
 
 ```zsh
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/deployment.yaml --record
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get deployments -o wide
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/redis.yaml --record
 
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" apply -f deployment/k8s/service.yml --record
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get svc -o wide
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/toad.yml --record
 
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" get pods -o wide
-$ kubectl --kubeconfig="prod-toad-cluster-kubeconfig.yaml" logs $PodName
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get deployments -o wide
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get svc -o wide
+
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get pods -o wide
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" logs $PodName
 ```
 
 
