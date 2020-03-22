@@ -1,11 +1,11 @@
 <p align="center">
-    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.2.0" width="150" />
+    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.2.1" width="150" />
     <h3 align="center">Toad</h3>
     <p align="center">Containerized Application for Testing Purposes</p>
     <p align="center">
         <a href="https://travis-ci.com/Clivern/Toad"><img src="https://travis-ci.com/Clivern/Toad.svg?branch=master"></a>
-        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.2.0-red.svg"></a>
-        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.2.0"></a>
+        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.2.1-red.svg"></a>
+        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.2.1"></a>
         <a href="https://hub.docker.com/r/clivern/toad"><img src="https://img.shields.io/badge/Docker-Latest-green"></a>
         <a href="https://github.com/Clivern/Toad/blob/master/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-orange.svg"></a>
     </p>
