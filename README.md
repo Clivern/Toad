@@ -1,11 +1,11 @@
 <p align="center">
-    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.1.6" width="150" />
+    <img alt="Toad Logo" src="https://raw.githubusercontent.com/clivern/Toad/master/assets/img/gopher.png?v=0.2.0" width="150" />
     <h3 align="center">Toad</h3>
     <p align="center">Containerized Application for Testing Purposes</p>
     <p align="center">
         <a href="https://travis-ci.com/Clivern/Toad"><img src="https://travis-ci.com/Clivern/Toad.svg?branch=master"></a>
-        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.1.6-red.svg"></a>
-        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.1.6"></a>
+        <a href="https://github.com/Clivern/Toad/releases"><img src="https://img.shields.io/badge/Version-0.2.0-red.svg"></a>
+        <a href="https://goreportcard.com/report/github.com/Clivern/Toad"><img src="https://goreportcard.com/badge/github.com/clivern/Toad?v=0.2.0"></a>
         <a href="https://hub.docker.com/r/clivern/toad"><img src="https://img.shields.io/badge/Docker-Latest-green"></a>
         <a href="https://github.com/Clivern/Toad/blob/master/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-orange.svg"></a>
     </p>
@@ -30,13 +30,56 @@ $ ./Toad
 Check the release.
 
 ```zsh
-$ ./Toad --get=release
+$ ./Toad --get release
+```
+
+Health check.
+
+```zsh
+$ ./Toad --get health
+```
+
+To run on stateful mode
+
+```zsh
+# If stateful, it will use redis by default
+$ export IS_STATEFUL=true
+
+# Redis configs
+$ export REDIS_HOST=localhost
+$ export REDIS_PORT=6379
+$ export REDIS_PASSWORD=
 ```
 
 Test it.
 
 ```zsh
-$ curl http://127.0.0.1:8080/
+# Home
+$ curl http://127.0.0.1:8080/ -v
+
+# Health check
+$ curl http://127.0.0.1:8080/_health -v
+
+# Get State (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/get -v
+
+# Change State (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/change -v
+
+# Reset State (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/reset -v
+
+# Enable Host (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/host_up -v
+
+# Disable Host (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/host_down -v
+
+# Enable All Hosts (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/all_up -v
+
+# Disable  All Hosts (Only Stateful Mode)
+$ curl http://127.0.0.1:8080/do/all_down -v
 ```
 
 Deploy on k8s.

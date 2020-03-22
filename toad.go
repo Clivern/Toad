@@ -12,6 +12,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/clivern/toad/internal/app/module"
+
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
@@ -37,7 +39,24 @@ func main() {
 	flag.StringVar(&get, "get", "", "get")
 	flag.Parse()
 
+	state := module.State{}
+
 	if get == "health" {
+		if state.IsStateless() {
+			fmt.Println("i am ok")
+			return
+		}
+
+		err := state.Init()
+
+		if err != nil {
+			panic(err)
+		}
+
+		if state.IsDown() {
+			panic("I am not ok")
+		}
+
 		fmt.Println("i am ok")
 		return
 	}
@@ -76,6 +95,29 @@ func main() {
 			"correlationId": u.String(),
 		}).Info("Incoming Request")
 
+		if state.IsStateless() {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "ok",
+			})
+			return
+		}
+
+		err := state.Init()
+
+		if err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		if state.IsDown() {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"status": "down",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})
@@ -98,6 +140,65 @@ func main() {
 			"time":    time.Now().Format("Mon Jan 2 15:04:05 2006"),
 			"host":    host,
 			"release": fmt.Sprintf(`Toad Version %v Commit %v, Built @%v`, version, commit, date),
+		})
+	})
+
+	r.GET("/do/:name", func(c *gin.Context) {
+		u := uuid.Must(uuid.NewV4(), nil)
+		host, _ := os.Hostname()
+
+		log.WithFields(log.Fields{
+			"time":          time.Now().Format("Mon Jan 2 15:04:05 2006"),
+			"host":          host,
+			"uri":           c.Request.URL.Path,
+			"method":        c.Request.Method,
+			"correlationId": u.String(),
+		}).Info("Incoming Request")
+
+		if state.IsStateless() {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Error! Application is stateless",
+			})
+			return
+		}
+
+		name := c.Param("name")
+
+		err := state.Init()
+
+		if err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		if name == "change" {
+			state.Change()
+		}
+
+		if name == "reset" {
+			state.Reset()
+		}
+
+		if name == "host_up" {
+			state.HostUp()
+		}
+
+		if name == "host_down" {
+			state.HostDown()
+		}
+
+		if name == "all_up" {
+			state.AllUp()
+		}
+
+		if name == "all_down" {
+			state.AllDown()
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"current": state.Get(),
 		})
 	})
 
