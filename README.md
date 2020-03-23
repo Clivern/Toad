@@ -87,9 +87,11 @@ Deploy on k8s.
 ```zsh
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/configs.yaml --record
 
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get configmaps configs -o yaml
+
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/redis.yaml --record
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/toad.yml --record
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/toad.yaml --record
 
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get deployments -o wide
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get svc -o wide
