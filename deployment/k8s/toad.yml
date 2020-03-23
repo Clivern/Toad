@@ -22,13 +22,25 @@ spec:
         image: clivern/toad:release-0.2.1
         env:
         - name: IS_STATEFUL
-          value: "true"
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_is_stateful
         - name: REDIS_HOST
-          value: "redis"
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_host
         - name: REDIS_PORT
-          value: "6379"
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_port
         - name: REDIS_PASSWORD
-          value: ""
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_password
         ports:
         - containerPort: 8080
         livenessProbe:

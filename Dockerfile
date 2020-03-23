@@ -20,7 +20,7 @@ RUN rm LICENSE
 RUN rm README.md
 RUN mv Toad toad
 
-RUN ./toad --get=release
+RUN ./toad --get release
 
 EXPOSE 8080
 

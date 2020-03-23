@@ -85,6 +85,8 @@ $ curl http://127.0.0.1:8080/do/all_down -v
 Deploy on k8s.
 
 ```zsh
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/configs.yaml --record
+
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/redis.yaml --record
 
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/toad.yml --record
