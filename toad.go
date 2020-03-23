@@ -123,6 +123,46 @@ func main() {
 		})
 	})
 
+	r.GET("/_ready", func(c *gin.Context) {
+		u := uuid.Must(uuid.NewV4(), nil)
+		host, _ := os.Hostname()
+
+		log.WithFields(log.Fields{
+			"time":          time.Now().Format("Mon Jan 2 15:04:05 2006"),
+			"host":          host,
+			"uri":           c.Request.URL.Path,
+			"method":        c.Request.Method,
+			"correlationId": u.String(),
+		}).Info("Incoming Request")
+
+		if state.IsStateless() {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "ok",
+			})
+			return
+		}
+
+		err := state.Init()
+
+		if err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		if state.IsDown() {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"status": "down",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
+	})
+
 	r.GET("/", func(c *gin.Context) {
 		u := uuid.Must(uuid.NewV4(), nil)
 		host, _ := os.Hostname()

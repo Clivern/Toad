@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: toad
-        image: clivern/toad:release-0.2.1
+        image: clivern/toad:release-0.2.2
         env:
         - name: IS_STATEFUL
           valueFrom:
@@ -43,10 +43,24 @@ spec:
               key: toad_redis_password
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /_ready
+            port: 8080
+            httpHeaders:
+            - name: X-CUSTOM-HEADER
+              value: 123
+          initialDelaySeconds: 5
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /_health
             port: 8080
+            httpHeaders:
+            - name: X-CUSTOM-HEADER
+              value: 123
+          initialDelaySeconds: 10
+          periodSeconds: 5
 
 ---
 apiVersion: v1
