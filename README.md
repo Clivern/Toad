@@ -21,25 +21,25 @@ Get [the latest binary.](https://github.com/Clivern/Toad/releases)
 $ curl -sL https://github.com/Clivern/Toad/releases/download/x.x.x/Toad_x.x.x_OS_x86_64.tar.gz | tar xz
 ```
 
-Run Toad.
+Run Toad:
 
 ```zsh
 $ ./Toad
 ```
 
-Check the release.
+Check the release:
 
 ```zsh
 $ ./Toad --get release
 ```
 
-Health check.
+Health check:
 
 ```zsh
 $ ./Toad --get health
 ```
 
-To run on stateful mode
+To run on stateful mode:
 
 ```zsh
 # If stateful, it will use redis by default
@@ -51,7 +51,7 @@ $ export REDIS_PORT=6379
 $ export REDIS_PASSWORD=
 ```
 
-Test it.
+Test it:
 
 ```zsh
 # Home
@@ -82,7 +82,7 @@ $ curl http://127.0.0.1:8080/do/all_up -v
 $ curl http://127.0.0.1:8080/do/all_down -v
 ```
 
-Deploy on k8s.
+Deploy on Kubernetes:
 
 ```zsh
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/configs.yaml --record
@@ -98,6 +98,32 @@ $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get svc -o wide
 
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get pods -o wide
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" logs $PodName
+```
+
+Deployment Strategies:
+
+Ramped: release a new version on a rolling update fashion, one after the other.
+
+```zsh
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/ramped/toad_ramped_strategy.yaml --record
+```
+
+Recreate: terminate the old version and release the new one.
+
+```zsh
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/recreate/toad_recreate_strategy.yaml --record
+```
+
+Blue/Green: release a new version alongside the old version then switch traffic.
+
+```zsh
+$ ~
+```
+
+Canary: release a new version to a subset of users, then proceed to a full rollout.
+
+```zsh
+$ ~
 ```
 
 

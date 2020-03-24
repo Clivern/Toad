@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toad-deployment
+  labels:
+    app: toad
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: toad
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: toad
+        tier: backend
+    spec:
+      containers:
+      - name: toad
+        image: clivern/toad:release-0.2.2
+        env:
+        - name: IS_STATEFUL
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_is_stateful
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_host
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_port
+        - name: REDIS_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: configs
+              key: toad_redis_password
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /_ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /_health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toad-loadbalancer
+  labels:
+    app: toad
+    tier: backend
+spec:
+  ports:
+    -
+      port: 80
+      targetPort: 8080
+  selector:
+    app: toad
+    tier: backend
+  type: LoadBalancer
