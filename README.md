@@ -117,7 +117,13 @@ $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployme
 Blue/Green: release a new version alongside the old version then switch traffic.
 
 ```zsh
-$ ~
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/toad_blue_green_strategy.yaml --record
+
+# Create service to load balance the old version (blue)
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/switch_to_blue.yaml --record
+
+# Create service to load balance the new version (green)
+$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/switch_to_green.yaml --record
 ```
 
 Canary: release a new version to a subset of users, then proceed to a full rollout.
