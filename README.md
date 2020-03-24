@@ -82,7 +82,7 @@ $ curl http://127.0.0.1:8080/do/all_up -v
 $ curl http://127.0.0.1:8080/do/all_down -v
 ```
 
-Deploy on Kubernetes:
+### Deploy on Kubernetes
 
 ```zsh
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/configs.yaml --record
@@ -100,7 +100,7 @@ $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get pods -o wide
 $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" logs $PodName
 ```
 
-Deployment Strategies:
+### Deployment Strategies
 
 Ramped: release a new version on a rolling update fashion, one after the other.
 
