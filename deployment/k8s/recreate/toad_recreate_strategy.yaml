@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: toad
-        image: clivern/toad:release-0.2.2
+        image: clivern/toad:release-0.2.3
         env:
         - name: IS_STATEFUL
           valueFrom:
