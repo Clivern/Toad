@@ -5,6 +5,7 @@ metadata:
   name: toad-deployment
   labels:
     app: toad
+    app.clivern.com/managed-by: beetle
 spec:
   replicas: 4
   selector:
@@ -64,6 +65,7 @@ metadata:
   labels:
     app: toad
     tier: backend
+    app.clivern.com/managed-by: beetle
 spec:
   ports:
     -
