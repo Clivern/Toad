@@ -15,9 +15,12 @@ A `Deployment` is also composed of a label selector, a desired replica count, an
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: toad
+  name: toad-deployment
 spec:
-  replicas: 3
+  replicas: 4
+  selector:
+    matchLabels:
+      app: toad
   template:
     metadata:
       labels:
@@ -26,8 +29,8 @@ spec:
     spec:
       containers:
         -
-          image: "clivern/toad:0.2.2"
-          name: toad_app
+          image: "clivern/toad:release-0.2.2"
+          name: toad-app
 ```
 
 You’re now ready to create the Deployment:
@@ -35,7 +38,7 @@ You’re now ready to create the Deployment:
 ```console
 $ kubectl create -f toad-deployment-v0.2.2.yaml --record
 
-deployment "toad" created
+deployment "toad-deployment" created
 ```
 
 Be sure to include the `--record` command-line option when creating it. This records the command in the revision history
@@ -43,9 +46,13 @@ Be sure to include the `--record` command-line option when creating it. This rec
 Checking a Deployment’s status:
 
 ```console
-$ kubectl rollout status deployment toad
+$ kubectl rollout status deployment toad-deployment
 
-deployment toad successfully rolled out
+Waiting for deployment "toad-deployment" rollout to finish: 0 of 4 updated replicas are available...
+Waiting for deployment "toad-deployment" rollout to finish: 1 of 4 updated replicas are available...
+Waiting for deployment "toad-deployment" rollout to finish: 2 of 4 updated replicas are available...
+Waiting for deployment "toad-deployment" rollout to finish: 3 of 4 updated replicas are available...
+deployment "toad-deployment" successfully rolled out
 ```
 
 You should see the three pod replicas up and running:
@@ -62,7 +69,7 @@ a `Deployment` doesn’t manage pods directly. Instead, it creates `ReplicaSets`
 $ kubectl get replicasets
 
 NAME               DESIRED   CURRENT   AGE
-toad-1506449474   3         3         10s
+toad-1506449474   4         4         10s
 ```
 
 
@@ -74,24 +81,24 @@ The `Recreate` strategy causes all old pods to be deleted before the new ones ar
 
 The `RollingUpdate` strategy, on the other hand, removes old pods one by one, while adding new ones at the same time, keeping the application available throughout the whole process, and ensuring there’s no drop in its capacity to handle requests. This is the default strategy. The upper and lower limits for the number of pods above or below the desired replica count are configurable. You should use this strategy only when your app can handle running both the old and new version at the same time.
 
-When you execute this command, you’re updating the toad Deployment’s pod template so the image used in its toad_app container is changed to `clivern/toad:0.2.3`
+When you execute this command, you’re updating the toad Deployment’s pod template so the image used in its toad_app container is changed to `clivern/toad:release-0.2.3`
 
 ```console
-$ kubectl set image deployment toad toad_app=clivern/toad:0.2.3
+$ kubectl set image deployment toad-deployment toad-app=clivern/toad:release-0.2.3 --record
 
-deployment "toad" image updated
+deployment "toad-deployment" image updated
 ```
 
 You can follow the progress of the rollout with kubectl rollout status:
 
 ```console
-$ kubectl rollout status deployment toad
+$ kubectl rollout status deployment toad-deployment
 ```
 
 To undo the last rollout of a Deployment:
 
 ```console
-$ kubectl rollout undo deployment toad
+$ kubectl rollout undo deployment toad-deployment
 
 deployment "toad" rolled back
 ```
@@ -101,18 +108,18 @@ This rolls the Deployment back to the previous revision.
 The revision history can be displayed with the kubectl rollout history command:
 
 ```console
-$ kubectl rollout history deployment toad
+$ kubectl rollout history deployment toad-deployment
 
 deployments "toad":
 REVISION    CHANGE-CAUSE
-2           kubectl set image deployment toad toad_app=clivern/toad:0.2.2
-3           kubectl set image deployment toad toad_app=clivern/toad:0.2.3
+2           kubectl set image deployment toad toad_app=clivern/toad:release-0.2.2
+3           kubectl set image deployment toad toad_app=clivern/toad:release-0.2.3
 ```
 
 You can roll back to a specific revision by specifying the revision in the undo command.
 
 ```console
-$ kubectl rollout undo deployment toad --to-revision=1
+$ kubectl rollout undo deployment toad-deployment --to-revision=1
 ```
 
 
@@ -134,23 +141,23 @@ spec:
 `maxUnavailable`: Determines how many pod instances can be unavailable relative to the desired replica count during the update. It also defaults to 25%, so the number of avail- able pod instances must never fall below 75% of the desired replica count. Here, when converting a percentage to an absolute number, the number is rounded down. If the desired replica count is set to four and the percentage is 25%, only one pod can be unavailable. There will always be at least three pod instances available to serve requests during the whole rollout. As with maxSurge, you can also specify an absolute value instead of a percentage.
 
 
-You can trigger the rollout by changing the image to `clivern/toad:0.2.4`, but then immediately (within a few seconds) pause the rollout (`canary release`).
+You can trigger the rollout by changing the image to `clivern/toad:release-0.2.4`, but then immediately (within a few seconds) pause the rollout (`canary release`).
 
 A `canary release` is a technique for minimizing the risk of rolling out a bad version of an application and it affecting all your users. Instead of rolling out the new version to everyone, you replace only one or a small number of old pods with new ones.
 
 ```console
-$ kubectl set image deployment toad toad_app=clivern/toad:0.2.3
-deployment "toad" image updated
+$ kubectl set image deployment toad-deployment toad-app=clivern/toad:release-0.2.3
+deployment "toad-deployment" image updated
 
-$ kubectl rollout pause deployment toad
-deployment "toad" paused
+$ kubectl rollout pause deployment toad-deployment
+deployment "toad-deployment" paused
 ```
 
 Once you’re confident the new version works as it should, you can resume the deployment to replace all the old pods with new ones:
 
 ```console
-$ kubectl rollout resume deployment toad
-deployment "toad" resumed
+$ kubectl rollout resume deployment toad-deployment
+deployment "toad-deployment" resumed
 ```
 
 #### Blocking rollouts of bad versions
@@ -164,10 +171,13 @@ The fact that the deployment will stuck is a good thing, because if it had conti
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: toad
+  name: toad-deployment
 spec:
   minReadySeconds: 10
-  replicas: 3
+  replicas: 4
+  selector:
+    matchLabels:
+      app: toad
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -181,7 +191,7 @@ spec:
     spec:
       containers:
         -
-          image: "clivern/toad:0.2.3"
+          image: "clivern/toad:release-0.2.3"
           name: toad_app
           readinessProbe:
             httpGet:
