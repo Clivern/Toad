@@ -15,27 +15,27 @@ A `Deployment` is also composed of a label selector, a desired replica count, an
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubia
+  name: toad
 spec:
   replicas: 3
   template:
     metadata:
       labels:
-        app: kubia
-      name: kubia
+        app: toad
+      name: toad
     spec:
       containers:
         -
-          image: "luksa/kubia:v1"
-          name: nodejs
+          image: "clivern/toad:0.2.2"
+          name: toad_app
 ```
 
 You’re now ready to create the Deployment:
 
 ```console
-$ kubectl create -f kubia-deployment-v1.yaml --record
+$ kubectl create -f toad-deployment-v0.2.2.yaml --record
 
-deployment "kubia" created
+deployment "toad" created
 ```
 
 Be sure to include the `--record` command-line option when creating it. This records the command in the revision history
@@ -43,9 +43,9 @@ Be sure to include the `--record` command-line option when creating it. This rec
 Checking a Deployment’s status:
 
 ```console
-$ kubectl rollout status deployment kubia
+$ kubectl rollout status deployment toad
 
-deployment kubia successfully rolled out
+deployment toad successfully rolled out
 ```
 
 You should see the three pod replicas up and running:
@@ -62,7 +62,7 @@ a `Deployment` doesn’t manage pods directly. Instead, it creates `ReplicaSets`
 $ kubectl get replicasets
 
 NAME               DESIRED   CURRENT   AGE
-kubia-1506449474   3         3         10s
+toad-1506449474   3         3         10s
 ```
 
 
@@ -74,26 +74,26 @@ The `Recreate` strategy causes all old pods to be deleted before the new ones ar
 
 The `RollingUpdate` strategy, on the other hand, removes old pods one by one, while adding new ones at the same time, keeping the application available throughout the whole process, and ensuring there’s no drop in its capacity to handle requests. This is the default strategy. The upper and lower limits for the number of pods above or below the desired replica count are configurable. You should use this strategy only when your app can handle running both the old and new version at the same time.
 
-When you execute this command, you’re updating the kubia Deployment’s pod template so the image used in its nodejs container is changed to `luksa/kubia:v2`
+When you execute this command, you’re updating the toad Deployment’s pod template so the image used in its toad_app container is changed to `clivern/toad:0.2.3`
 
 ```console
-$ kubectl set image deployment kubia nodejs=luksa/kubia:v2
+$ kubectl set image deployment toad toad_app=clivern/toad:0.2.3
 
-deployment "kubia" image updated
+deployment "toad" image updated
 ```
 
 You can follow the progress of the rollout with kubectl rollout status:
 
 ```console
-$ kubectl rollout status deployment kubia
+$ kubectl rollout status deployment toad
 ```
 
 To undo the last rollout of a Deployment:
 
 ```console
-$ kubectl rollout undo deployment kubia
+$ kubectl rollout undo deployment toad
 
-deployment "kubia" rolled back
+deployment "toad" rolled back
 ```
 
 This rolls the Deployment back to the previous revision.
@@ -101,18 +101,18 @@ This rolls the Deployment back to the previous revision.
 The revision history can be displayed with the kubectl rollout history command:
 
 ```console
-$ kubectl rollout history deployment kubia
+$ kubectl rollout history deployment toad
 
-deployments "kubia":
+deployments "toad":
 REVISION    CHANGE-CAUSE
-2           kubectl set image deployment kubia nodejs=luksa/kubia:v2
-3           kubectl set image deployment kubia nodejs=luksa/kubia:v3
+2           kubectl set image deployment toad toad_app=clivern/toad:0.2.2
+3           kubectl set image deployment toad toad_app=clivern/toad:0.2.3
 ```
 
 You can roll back to a specific revision by specifying the revision in the undo command.
 
 ```console
-$ kubectl rollout undo deployment kubia --to-revision=1
+$ kubectl rollout undo deployment toad --to-revision=1
 ```
 
 
@@ -134,23 +134,23 @@ spec:
 `maxUnavailable`: Determines how many pod instances can be unavailable relative to the desired replica count during the update. It also defaults to 25%, so the number of avail- able pod instances must never fall below 75% of the desired replica count. Here, when converting a percentage to an absolute number, the number is rounded down. If the desired replica count is set to four and the percentage is 25%, only one pod can be unavailable. There will always be at least three pod instances available to serve requests during the whole rollout. As with maxSurge, you can also specify an absolute value instead of a percentage.
 
 
-You can trigger the rollout by changing the image to `luksa/kubia:v4`, but then immediately (within a few seconds) pause the rollout (`canary release`).
+You can trigger the rollout by changing the image to `clivern/toad:0.2.4`, but then immediately (within a few seconds) pause the rollout (`canary release`).
 
 A `canary release` is a technique for minimizing the risk of rolling out a bad version of an application and it affecting all your users. Instead of rolling out the new version to everyone, you replace only one or a small number of old pods with new ones.
 
 ```console
-$ kubectl set image deployment kubia nodejs=luksa/kubia:v4
-deployment "kubia" image updated
+$ kubectl set image deployment toad toad_app=clivern/toad:0.2.3
+deployment "toad" image updated
 
-$ kubectl rollout pause deployment kubia
-deployment "kubia" paused
+$ kubectl rollout pause deployment toad
+deployment "toad" paused
 ```
 
 Once you’re confident the new version works as it should, you can resume the deployment to replace all the old pods with new ones:
 
 ```console
-$ kubectl rollout resume deployment kubia
-deployment "kubia" resumed
+$ kubectl rollout resume deployment toad
+deployment "toad" resumed
 ```
 
 #### Blocking rollouts of bad versions
@@ -164,7 +164,7 @@ The fact that the deployment will stuck is a good thing, because if it had conti
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubia
+  name: toad
 spec:
   minReadySeconds: 10
   replicas: 3
@@ -176,18 +176,25 @@ spec:
   template:
     metadata:
       labels:
-        app: kubia
-      name: kubia
+        app: toad
+      name: toad
     spec:
       containers:
         -
-          image: "luksa/kubia:v3"
-          name: nodejs
+          image: "clivern/toad:0.2.3"
+          name: toad_app
           readinessProbe:
             httpGet:
-              path: /
+              path: /_ready
               port: 8080
-            periodSeconds: 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
 ```
 
 Usually, you’d set `minReadySeconds` to something much higher to make sure pods keep reporting they’re ready after they’ve already started receiving actual traffic.
