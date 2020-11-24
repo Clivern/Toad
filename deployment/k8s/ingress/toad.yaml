@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toad1-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: toad1
+  template:
+    metadata:
+      labels:
+        app: toad1
+      name: toad1
+    spec:
+      containers:
+        -
+          image: "clivern/toad:release-0.2.4"
+          name: toad1-app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toad2-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: toad2
+  template:
+    metadata:
+      labels:
+        app: toad2
+      name: toad2
+    spec:
+      containers:
+        -
+          image: "clivern/toad:release-0.2.4"
+          name: toad2-app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toad1-svc
+  labels:
+    app: toad1
+spec:
+  ports:
+    -
+      port: 80
+      targetPort: 8080
+  selector:
+    app: toad1
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toad2-svc
+  labels:
+    app: toad2
+spec:
+  ports:
+    -
+      port: 80
+      targetPort: 8080
+  selector:
+    app: toad2
+  type: LoadBalancer
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: toad-ing1
+spec:
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /toad1
+        pathType: Prefix
+        backend:
+          service:
+            name: toad1-svc
+            port:
+              number: 80
+      - path: /toad2
+        pathType: Prefix
+        backend:
+          service:
+            name: toad2-svc
+            port:
+              number: 80
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: toad-ing2
+spec:
+  rules:
+  - host: toad1.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: toad1-svc
+          servicePort: 80
+
+  - host: toad2.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: toad2-svc
+          servicePort: 80

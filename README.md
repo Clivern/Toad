@@ -85,19 +85,19 @@ $ curl http://127.0.0.1:8080/do/all_down -v
 ### Deploy on Kubernetes
 
 ```zsh
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/configs.yaml --record
+$ kubectl apply -f deployment/k8s/configs.yaml --record
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get configmaps configs -o yaml
+$ kubectl get configmaps configs -o yaml
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/redis.yaml --record
+$ kubectl apply -f deployment/k8s/redis.yaml --record
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/toad.yaml --record
+$ kubectl apply -f deployment/k8s/toad.yaml --record
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get deployments -o wide
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get svc -o wide
+$ kubectl get deployments -o wide
+$ kubectl get svc -o wide
 
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" get pods -o wide
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" logs $PodName
+$ kubectl get pods -o wide
+$ kubectl logs $PodName
 ```
 
 ### Deployment Strategies
@@ -105,31 +105,55 @@ $ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" logs $PodName
 Ramped: release a new version on a rolling update fashion, one after the other.
 
 ```zsh
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/ramped/toad_ramped_strategy.yaml --record
+$ kubectl apply -f deployment/k8s/ramped/toad_ramped_strategy.yaml --record
 ```
 
 Recreate: terminate the old version and release the new one.
 
 ```zsh
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/recreate/toad_recreate_strategy.yaml --record
+$ kubectl apply -f deployment/k8s/recreate/toad_recreate_strategy.yaml --record
 ```
 
 Blue/Green: release a new version alongside the old version then switch traffic.
 
 ```zsh
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/toad_blue_green_strategy.yaml --record
+$ kubectl apply -f deployment/k8s/blue_green/toad_blue_green_strategy.yaml --record
 
 # Create service to load balance the old version (blue)
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/switch_to_blue.yaml --record
+$ kubectl apply -f deployment/k8s/blue_green/switch_to_blue.yaml --record
 
 # Create service to load balance the new version (green)
-$ kubectl --kubeconfig="/path/to/prod-cluster-kubeconfig.yaml" apply -f deployment/k8s/blue_green/switch_to_green.yaml --record
+$ kubectl apply -f deployment/k8s/blue_green/switch_to_green.yaml --record
 ```
 
 Canary: release a new version to a subset of users, then proceed to a full rollout.
 
 ```zsh
 $ ~
+```
+
+
+### Kubernetes Ingresses
+
+It allow you to flexibly route traffic from outside your Kubernetes cluster to Services inside of your cluster.
+
+```zsh
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/cloud/deploy.yaml
+$ kubectl get pods -n ingress-nginx \
+  -l app.kubernetes.io/name=ingress-nginx --watch
+$ kubectl get svc --namespace=ingress-nginx
+
+$ kubectl apply -f deployment/k8s/ingress/toad.yaml --record
+
+$ kubectl get ingress
+$ kubectl describe ingress toad-ing1
+$ kubectl describe ingress toad-ing2
+
+$ curl http://example.com/toad1/
+$ curl http://example.com/toad2/
+
+$ curl http://toad1.example.com/
+$ curl http://toad2.example.com/
 ```
 
 
