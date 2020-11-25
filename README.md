@@ -152,6 +152,9 @@ $ kubectl describe ingress toad-ing2
 $ curl http://example.com/toad1/
 $ curl http://example.com/toad2/
 
+$ curl http://example.com/toad1/_ready
+$ curl http://example.com/toad2/_ready
+
 $ curl http://toad1.example.com/
 $ curl http://toad2.example.com/
 ```

@@ -77,20 +77,25 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    # example.com/toad1 rewrites to example.com/
+    # example.com/toad1/ rewrites to example.com/
+    # example.com/toad1/_ready rewrites to example.com/_ready
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   name: toad-ing1
 spec:
   rules:
   - host: example.com
     http:
       paths:
-      - path: /toad1
+      - path: /toad1(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: toad1-svc
             port:
               number: 80
-      - path: /toad2
+      - path: /toad2(/|$)(.*)
         pathType: Prefix
         backend:
           service:
