@@ -1,4 +1,4 @@
-FROM golang:1.17.3
+FROM golang:1.18.3
 
 ARG TOAD_VERSION=0.2.4
 
